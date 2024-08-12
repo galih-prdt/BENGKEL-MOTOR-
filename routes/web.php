@@ -1,0 +1,76 @@
+<?php
+
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\ServisController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KategoriServiceController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\AkunController;
+use App\Http\Controllers\PembukuanController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\EmailController;
+
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+Route::get('/', function () {
+    return view('landing');
+});
+Route::get('/test', function () {
+    return view('laporan/pdf');
+});
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// Route Barang
+Route::resource('barang', BarangController::class);
+
+// Route Kategori
+Route::resource('kategori', KategoriServiceController::class);
+
+// Route Profile
+Route::resource('profile', ProfileController::class);
+
+// Route User
+Route::resource('user', UserController::class);
+
+// Route Servis
+Route::resource('servis', ServisController::class);
+Route::post('/servis/update-status/{id}', [ServisController::class, 'updateStatus'])->name('servis.updateStatus'); //update status
+Route::get('/servis/form/{id}', [FrontendController::class, 'showServiceForm'])->name('servis.form');
+
+
+// Frontend
+Route::get('/home', [FrontendController::class, 'index'])->name('home');
+
+// Route Laporan
+Route::resource('akun', AkunController::class);
+Route::resource('laporan', PembukuanController::class);
+Route::get('/generate-pdf', [LaporanController::class, 'generatePdf'])->name('generate.pdf');
+
+// Route Dashboard Admin
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+// Route untuk mengirim link reset password
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Jika Anda memiliki controller lain untuk mengelola form email, gunakan controller yang sesuai
+Route::post('/submit-email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('submit.email');
+
+Route::post('/submit-email', [EmailController::class, 'store'])->name('submit.email');
